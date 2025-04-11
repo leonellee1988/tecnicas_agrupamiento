@@ -17,12 +17,22 @@ st.title('Clustering techniques.')
 def main():
 
     # Mostrar dataframe:
-    st.subheader(f'Dataframe: Customer purchases by product category.')
+    st.subheader(f'Dataframe: Customer purchases by product category (first 5 facts).')
     st.dataframe(df)
 
     # Crear matriz de correlación y distribución:
-    t.subheader(f'Correlation and distribution matrix.')
+    st.subheader(f'Correlation and distribution matrix.')
     sns.pairplot(data=df)
+
+    # Generación del nuevo dataframe con las variables de interés:
+    st.subheader(f'Generating the new dataframe with the variables: "Grocery" and "Detergents_paper".')
+    df_var = df[['Grocery','Detergents_Paper']]
+    df_var.head(5)
+    st.write('''
+            Note:
+            1) These variables were chosen because they exhibit a positive correlation.
+            2) The first 5 data points from the new data frame are shown.
+            ''')
 
 main()
 
