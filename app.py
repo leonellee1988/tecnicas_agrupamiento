@@ -11,12 +11,13 @@ st.set_page_config(page_title='Clustering techniques', page_icon='lee_logo.png')
 df = pd.read_csv('wholesale_customers_data.csv')
 
 # Encabezado de la App:
-st.image('cluster.svg', width=150)
+st.image('cluster.svg', width=300)
 st.title('Clustering techniques')
 
 def main():
 
     # Mostrar Dataframe:
+    st.subheader(f'Dataframe: Customer purchases by product category')
     st.dataframe(df)
 
 main()
