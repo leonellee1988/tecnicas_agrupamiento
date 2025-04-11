@@ -27,9 +27,15 @@ def main():
             1) The first 5 data points from the dataframe are shown.
             ''')
 
-    # Crear matriz de correlación y distribución:
-    st.subheader(f'Correlation and distribution matrix.')
-    fig = sns.pairplot(data=df)
+   # Crear matriz de correlación y mapa de calor
+    st.subheader('Correlation heatmap between product categories')
+    # Calcular la matriz de correlación
+    corr_matrix = df.corr()
+    # Crear figura del mapa de calor
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
+
+    # Mostrar en Streamlit
     st.pyplot(fig)
 
     # Generación del nuevo dataframe con las variables de interés:
