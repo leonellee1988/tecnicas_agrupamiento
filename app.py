@@ -27,33 +27,26 @@ def mean_shift_clustering(data):
     quantile_value = st.slider('Select the quantile value for bandwidth estimation:', 0.0, 1.0, 0.6, step=0.05)
     bandwidth = estimate_bandwidth(data, quantile=quantile_value)
     st.write(f'Estimated bandwidth: **{bandwidth:.3f}**')
-
     ms = MeanShift(bandwidth=bandwidth)
     ms.fit(data)
     labels = ms.labels_
-
     result = data.copy()
     result['Group'] = labels
-
     st.subheader('Cluster visualization:')
     fig = sns.pairplot(result, hue='Group', palette='bright')
     st.pyplot(fig)
 
-from sklearn.cluster import KMeans
-
 # Función para el método KMeans:
 def kmeans_clustering(data):
     st.subheader('KMeans Clustering')
-
     # Método de codo (Elbow method)
     inertia = []
     for i in range(1, 11):
         kmeans = KMeans(n_clusters=i, random_state=1234, n_init='auto')
         kmeans.fit(data)
         inertia.append((i, kmeans.inertia_))
-
     fig_elbow, ax = plt.subplots()
-    ax.plot([x[0] for x in inertia], [x[1] for x in inertia], marker="X")
+    ax.plot([x[0] for x in inertia], [x[1] for x in inertia], marker="o")
     ax.set_xlabel("Number of Clusters (k)")
     ax.set_ylabel("Inertia")
     ax.set_title("Elbow Method")
@@ -63,16 +56,11 @@ def kmeans_clustering(data):
     clusters = st.number_input('Choose the number of clusters based on the elbow plot:', min_value=2, max_value=10, value=3)
     kmeans = KMeans(n_clusters=clusters, random_state=1234, n_init='auto')
     labels = kmeans.fit_predict(data)
-
     result = data.copy()
     result['Group'] = labels
-
     st.subheader('Cluster visualization:')
     fig = sns.pairplot(result, hue='Group', palette='bright')
     st.pyplot(fig)
-
-from scipy.cluster.hierarchy import linkage, dendrogram
-from sklearn.cluster import AgglomerativeClustering
 
 # Función para el método Agglomerative:
 def agglomerative_clustering(data, full_df):
@@ -90,35 +78,24 @@ def agglomerative_clustering(data, full_df):
 
     # Número de clústeres elegido por el usuario
     n_clusters = st.number_input('Choose the number of clusters based on the dendrogram:', min_value=2, max_value=10, value=3)
-
     cluster = AgglomerativeClustering(n_clusters=n_clusters, metric='euclidean', linkage='ward')
     labels = cluster.fit_predict(full_df)
-
     result = data.copy()
-    result['Cluster'] = labels
-
+    result['Group'] = labels
     st.subheader('Cluster visualization:')
-    fig = sns.pairplot(result, hue='Cluster', palette='bright')
+    fig = sns.pairplot(result, hue='Group', palette='bright')
     st.pyplot(fig)
-
-from sklearn.cluster import DBSCAN
 
 # Función método DBSCAN:
 from sklearn.cluster import DBSCAN
 
 def dbscan_clustering(data):
     st.subheader('DBSCAN Clustering')
-
-    # Aplicar DBSCAN sin parámetros ajustables
     dbscan = DBSCAN()
     dbscan.fit(data)
     labels = dbscan.labels_
-
-    # Añadir resultados al DataFrame
     result = data.copy()
     result['Group'] = labels
-
-    # Visualización
     st.subheader('Cluster visualization:')
     fig = sns.pairplot(result, hue='Group', palette='bright')
     st.pyplot(fig)
@@ -142,13 +119,9 @@ def main():
 
    # Crear matriz de correlación y mapa de calor
     st.subheader('Correlation heatmap between product categories')
-    # Calcular la matriz de correlación
     corr_matrix = df.corr()
-    # Crear figura del mapa de calor
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
-
-    # Mostrar en Streamlit
     st.pyplot(fig)
 
     # Generación del nuevo dataframe con las variables de interés:
@@ -163,8 +136,6 @@ def main():
 
     # Selección del tipo de técnica de agrupamiento
     st.subheader('Choose the type of grouping technique:')
-    
-    # Menú para seleccionar el método de agrupación:
     clustering_method = st.selectbox(
         'Select a clustering algorithm:',
         ('', 'Mean-Shift', 'KMeans', 'Agglomerative', 'DBSCAN')
@@ -172,13 +143,10 @@ def main():
     
     if clustering_method == 'Mean-Shift':
         mean_shift_clustering(df_var)
-
     elif clustering_method == 'KMeans':
         kmeans_clustering(df_var)
-
     elif clustering_method == 'Agglomerative':
         agglomerative_clustering(df_var, df)
-
     elif clustering_method == 'DBSCAN':
         dbscan_clustering(df_var)
 
