@@ -19,8 +19,12 @@ st.title('Clustering techniques.')
 def main():
 
     # Mostrar dataframe:
-    st.subheader(f'Dataframe: Customer purchases by product category (first 5 facts).')
+    st.subheader(f'Dataframe: Customer purchases by product category.')
     st.dataframe(df.head(5))
+    st.write('''
+            **Note:**
+            1) The first 5 data points from the dataframe are shown.
+            ''')
 
     # Crear matriz de correlación y distribución:
     st.subheader(f'Correlation and distribution matrix.')
@@ -32,10 +36,21 @@ def main():
     df_var = df[['Grocery','Detergents_Paper']]
     st.dataframe(df_var.head(5))
     st.write('''
-            Note:
+            **Note:**
             1) These variables were chosen because they exhibit a positive correlation.
-            2) The first 5 data points from the new data frame are shown.
-            d''')
+            2) The first 5 data points from the new dataframe are shown.
+            ''')
+
+        # Selección del tipo de técnica de agrupamiento
+    st.subheader('Choose the type of grouping technique:')
+    
+    # Menú para seleccionar el método de agrupación:
+    clustering_method = st.selectbox(
+        'Select a clustering algorithm:',
+        ('Mean-Shift', 'KMeans', 'Agglomerative', 'DBSCAN')
+    )
+    
+    st.write(f'You selected: **{clustering_method}**')
 
 main()
 
