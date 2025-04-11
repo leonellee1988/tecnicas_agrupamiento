@@ -4,6 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.cluster import MeanShift, estimate_bandwidth
+from sklearn.cluster import KMeans
+from scipy.cluster.hierarchy import linkage, dendrogram
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import DBSCAN
 
 # Configurar generalidades de la App:
 st.set_page_config(page_title='Clustering techniques', page_icon='lee_logo.png')
@@ -17,6 +21,115 @@ with middle:
     st.image('cluster.svg', width=150)
 st.title('Clustering techniques.')
 
+# Función para el método Mean-Shift:
+def mean_shift_clustering(data):
+    st.subheader('Mean-Shift Clustering')
+    quantile_value = st.slider('Select the quantile value for bandwidth estimation:', 0.0, 1.0, 0.6, step=0.05)
+    bandwidth = estimate_bandwidth(data, quantile=quantile_value)
+    st.write(f'Estimated bandwidth: **{bandwidth:.3f}**')
+
+    ms = MeanShift(bandwidth=bandwidth)
+    ms.fit(data)
+    labels = ms.labels_
+
+    result = data.copy()
+    result['Group'] = labels
+
+    st.subheader('Cluster visualization:')
+    fig = sns.pairplot(result, hue='Group', palette='bright')
+    st.pyplot(fig)
+
+from sklearn.cluster import KMeans
+
+# Función para el método KMeans:
+def kmeans_clustering(data):
+    st.subheader('KMeans Clustering')
+
+    # Método de codo (Elbow method)
+    inertia = []
+    for i in range(1, 11):
+        kmeans = KMeans(n_clusters=i, random_state=1234, n_init='auto')
+        kmeans.fit(data)
+        inertia.append((i, kmeans.inertia_))
+
+    fig_elbow, ax = plt.subplots()
+    ax.plot([x[0] for x in inertia], [x[1] for x in inertia], marker="X")
+    ax.set_xlabel("Number of Clusters (k)")
+    ax.set_ylabel("Inertia")
+    ax.set_title("Elbow Method")
+    st.pyplot(fig_elbow)
+
+    # Número de clústeres elegido por el usuario
+    clusters = st.number_input('Choose the number of clusters based on the elbow plot:', min_value=2, max_value=10, value=3)
+    kmeans = KMeans(n_clusters=clusters, random_state=1234, n_init='auto')
+    labels = kmeans.fit_predict(data)
+
+    result = data.copy()
+    result['Group'] = labels
+
+    st.subheader('Cluster visualization:')
+    fig = sns.pairplot(result, hue='Group', palette='bright')
+    st.pyplot(fig)
+
+from scipy.cluster.hierarchy import linkage, dendrogram
+from sklearn.cluster import AgglomerativeClustering
+
+# Función para el método Agglomerative:
+def agglomerative_clustering(data, full_df):
+    st.subheader('Agglomerative Clustering')
+
+    # Dendrograma
+    linked = linkage(full_df, method='ward', metric='euclidean')
+    fig, ax = plt.subplots(figsize=(10, 6))
+    dendrogram(linked, orientation='top', distance_sort='ascending', show_leaf_counts=True, p=30, ax=ax)
+    plt.xticks([])
+    plt.title('Dendrogram')
+    plt.xlabel('Samples')
+    plt.ylabel('Euclidean Distance')
+    st.pyplot(fig)
+
+    # Número de clústeres elegido por el usuario
+    n_clusters = st.number_input('Choose the number of clusters based on the dendrogram:', min_value=2, max_value=10, value=3)
+
+    cluster = AgglomerativeClustering(n_clusters=n_clusters, metric='euclidean', linkage='ward')
+    labels = cluster.fit_predict(full_df)
+
+    result = data.copy()
+    result['Cluster'] = labels
+
+    st.subheader('Cluster visualization:')
+    fig = sns.pairplot(result, hue='Cluster', palette='bright')
+    st.pyplot(fig)
+
+from sklearn.cluster import DBSCAN
+
+# Función método DBSCAN:
+from sklearn.cluster import DBSCAN
+
+def dbscan_clustering(data):
+    st.subheader('DBSCAN Clustering')
+
+    # Aplicar DBSCAN sin parámetros ajustables
+    dbscan = DBSCAN()
+    dbscan.fit(data)
+    labels = dbscan.labels_
+
+    # Añadir resultados al DataFrame
+    result = data.copy()
+    result['Group'] = labels
+
+    # Visualización
+    st.subheader('Cluster visualization:')
+    fig = sns.pairplot(result, hue='Group', palette='bright')
+    st.pyplot(fig)
+
+    # Mostrar número de grupos encontrados (excluyendo ruido -1)
+    n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+    st.write(f'Number of clusters found: **{n_clusters}**')
+    if -1 in labels:
+        st.write('Note: Some points were labeled as noise (`-1`) by DBSCAN.')
+
+# Función principal:
 def main():
 
     # Mostrar dataframe:
@@ -48,7 +161,7 @@ def main():
             2) The first 5 data points from the new dataframe are shown.
             ''')
 
-        # Selección del tipo de técnica de agrupamiento
+    # Selección del tipo de técnica de agrupamiento
     st.subheader('Choose the type of grouping technique:')
     
     # Menú para seleccionar el método de agrupación:
@@ -58,30 +171,16 @@ def main():
     )
     
     if clustering_method == 'Mean-Shift':
-        st.subheader('Mean-Shift Clustering')
+        mean_shift_clustering(df_var)
 
-        # Slider para ajustar el quantile
-        quantile_value = st.slider('Select the quantile value for bandwidth estimation:', 0.0, 1.0, 0.6, step=0.05)
-        st.write(f'Selected quantile: **{quantile_value}**')
+    elif clustering_method == 'KMeans':
+        kmeans_clustering(df_var)
 
-        # Estimar el ancho de banda
-        bandwidth = estimate_bandwidth(df_var, quantile=quantile_value)
-        st.write(f'Estimated bandwidth: **{bandwidth:.3f}**')
+    elif clustering_method == 'Agglomerative':
+        agglomerative_clustering(df_var, df)
 
-        # Aplicar Mean-Shift
-        ms = MeanShift(bandwidth=bandwidth)
-        ms.fit(df_var)
-        labels = ms.labels_
-        centroids = ms.cluster_centers_
-
-        # Añadir etiquetas al dataframe
-        df_var_clustered = df_var.copy()
-        df_var_clustered['Group'] = labels
-
-        # Visualización
-        st.subheader('Cluster visualization:')
-        fig_ms = sns.pairplot(data=df_var_clustered, hue='Group', palette='bright')
-        st.pyplot(fig_ms)
+    elif clustering_method == 'DBSCAN':
+        dbscan_clustering(df_var)
 
 main()
 
