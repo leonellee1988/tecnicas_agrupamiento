@@ -36,6 +36,9 @@ def mean_shift_clustering(data):
     fig = sns.pairplot(result, hue='Group', palette='bright')
     st.pyplot(fig)
 
+    st.subheader('About Mean-Shift:')
+    st.image('mean_shift.png')
+
 # Función para el método KMeans:
 def kmeans_clustering(data):
     st.subheader('KMeans Clustering')
@@ -62,6 +65,9 @@ def kmeans_clustering(data):
     fig = sns.pairplot(result, hue='Group', palette='bright')
     st.pyplot(fig)
 
+    st.subheader('About KMeans:')
+    st.image('kmeans.png')
+
 # Función para el método Agglomerative:
 def agglomerative_clustering(data, full_df):
     st.subheader('Agglomerative Clustering')
@@ -86,6 +92,9 @@ def agglomerative_clustering(data, full_df):
     fig = sns.pairplot(result, hue='Group', palette='bright')
     st.pyplot(fig)
 
+    st.subheader('About Agglomerative:')
+    st.image('agglomerative.png')
+
 # Función método DBSCAN:
 from sklearn.cluster import DBSCAN
 
@@ -105,6 +114,9 @@ def dbscan_clustering(data):
     st.write(f'Number of clusters found: **{n_clusters}**')
     if -1 in labels:
         st.write('Note: Some points were labeled as noise (`-1`) by DBSCAN.')
+    
+    st.subheader('About DBSCAN:')
+    st.image('dbscan.png')
 
 # Función principal:
 def main():
