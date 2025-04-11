@@ -11,14 +11,18 @@ st.set_page_config(page_title='Clustering techniques', page_icon='lee_logo.png')
 df = pd.read_csv('wholesale_customers_data.csv')
 
 # Encabezado de la App:
-st.image('cluster.svg', width=300)
-st.title('Clustering techniques')
+st.image('cluster.svg', width=200)
+st.title('Clustering techniques.')
 
 def main():
 
-    # Mostrar Dataframe:
-    st.subheader(f'Dataframe: Customer purchases by product category')
+    # Mostrar dataframe:
+    st.subheader(f'Dataframe: Customer purchases by product category.')
     st.dataframe(df)
+
+    # Crear matriz de correlación y distribución:
+    t.subheader(f'Correlation and distribution matrix.')
+    sns.pairplot(data=df)
 
 main()
 
