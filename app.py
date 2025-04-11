@@ -93,7 +93,7 @@ def agglomerative_clustering(data, full_df):
     st.pyplot(fig)
 
     st.subheader('About Agglomerative:')
-    st.image('agglomerative.png')
+    st.image('hierarchical.png')
 
 # Función método DBSCAN:
 from sklearn.cluster import DBSCAN
