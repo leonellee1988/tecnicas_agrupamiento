@@ -11,7 +11,9 @@ st.set_page_config(page_title='Clustering techniques', page_icon='lee_logo.png')
 df = pd.read_csv('wholesale_customers_data.csv')
 
 # Encabezado de la App:
-st.image('cluster.svg', width=200)
+left, middle, right = st.columns(3, vertical_alignment='bottom')
+with middle:
+    st.image('cluster.svg', width=150)
 st.title('Clustering techniques.')
 
 def main():
