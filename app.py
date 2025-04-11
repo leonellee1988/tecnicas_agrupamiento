@@ -18,21 +18,22 @@ def main():
 
     # Mostrar dataframe:
     st.subheader(f'Dataframe: Customer purchases by product category (first 5 facts).')
-    st.dataframe(df)
+    st.dataframe(df.head(5))
 
     # Crear matriz de correlación y distribución:
     st.subheader(f'Correlation and distribution matrix.')
-    sns.pairplot(data=df)
+    fig = sns.pairplot(data=df)
+    st.pyplot(fig)
 
     # Generación del nuevo dataframe con las variables de interés:
     st.subheader(f'Generating the new dataframe with the variables: "Grocery" and "Detergents_paper".')
     df_var = df[['Grocery','Detergents_Paper']]
-    df_var.head(5)
+    st.dataframe(df_var.head(5))
     st.write('''
             Note:
             1) These variables were chosen because they exhibit a positive correlation.
             2) The first 5 data points from the new data frame are shown.
-            ''')
+            d''')
 
 main()
 
